@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import cn from 'classnames';
 import { Loader } from '../Loader';
 import { Todo } from '../../types/Todo';
 import { getUser } from '../../api';
@@ -14,6 +15,7 @@ export const TodoModal: React.FC<TodoModalProps> = ({ todo, onClose }) => {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
+    setLoadingUser(true);
     getUser(todo.userId)
       .then(user => {
         setUserName(user.name);
@@ -53,9 +55,10 @@ export const TodoModal: React.FC<TodoModalProps> = ({ todo, onClose }) => {
 
             <p className="block" data-cy="modal-user">
               <strong
-                className={
-                  todo.completed ? 'has-text-success' : 'has-text-danger'
-                }
+                className={cn({
+                  'has-text-success': todo.completed,
+                  'has-text-danger': !todo.completed,
+                })}
               >
                 {todo.completed ? 'Done' : 'Planned'}
               </strong>
