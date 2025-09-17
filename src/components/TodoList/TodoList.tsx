@@ -1,75 +1,57 @@
 import React from 'react';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type TodoListProps = {
   todos: Todo[];
   selectedTodo: Todo | null;
-  onShow: React.Dispatch<React.SetStateAction<Todo | null>>;
+  onShow: (todo: Todo) => void;
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
   selectedTodo,
   onShow,
-}) => (
-  <table className="table is-narrow is-fullwidth">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>
-          <span className="icon">
-            <i className="fas fa-check" />
-          </span>
-        </th>
-        <th>Title</th>
-        <th> </th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {todos.map((todo, index) => (
-        <tr
-          key={todo.id}
-          data-cy="todo"
-          className={index % 2 === 1 ? 'has-background-info-light' : ''}
-        >
-          <td className="is-vcentered">{index + 1}</td>
-          <td className="is-vcentered">
-            {todo.completed && (
-              <span className="icon" data-cy="iconCompleted">
-                <i className="fas fa-check" />
-              </span>
-            )}
-          </td>
-          <td className="is-vcentered is-expanded">
-            <p
-              className={
-                todo.completed ? 'has-text-success' : 'has-text-danger'
-              }
-            >
-              {todo.title}
-            </p>
-          </td>
-          <td className="has-text-right is-vcentered">
-            <button
-              data-cy="selectButton"
-              className="button"
-              type="button"
-              onClick={() => onShow(selectedTodo?.id === todo.id ? null : todo)}
-            >
-              <span className="icon">
-                <i
-                  className={
-                    selectedTodo?.id === todo.id
-                      ? 'far fa-eye-slash'
-                      : 'far fa-eye'
-                  }
-                />
-              </span>
-            </button>
-          </td>
+}) => {
+  return (
+    <table className="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Action</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-);
+      </thead>
+      <tbody>
+        {todos.map((todo, index) => (
+          <tr
+            key={todo.id}
+            data-cy="todo"
+            className={cn({ 'has-background-info-light': index % 2 === 1 })}
+          >
+            <td>{todo.id}</td>
+            <td>{todo.title}</td>
+            <td
+              className={cn({
+                'has-text-success': todo.completed,
+                'has-text-danger': !todo.completed,
+              })}
+            >
+              {todo.completed ? 'Done' : 'Planned'}
+            </td>
+            <td>
+              <i
+                className={cn('far', {
+                  'fa-eye-slash': selectedTodo?.id === todo.id,
+                  'fa-eye': selectedTodo?.id !== todo.id,
+                })}
+                onClick={() => onShow(todo)}
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};

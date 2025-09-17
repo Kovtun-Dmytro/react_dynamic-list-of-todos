@@ -15,13 +15,26 @@ export const TodoModal: React.FC<TodoModalProps> = ({ todo, onClose }) => {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
+
     setLoadingUser(true);
+
     getUser(todo.userId)
       .then(user => {
-        setUserName(user.name);
-        setUserEmail(user.email);
+        if (!cancelled) {
+          setUserName(user.name);
+          setUserEmail(user.email);
+        }
       })
-      .finally(() => setLoadingUser(false));
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingUser(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [todo.userId]);
 
   return (
